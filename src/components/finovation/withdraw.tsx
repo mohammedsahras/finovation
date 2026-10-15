@@ -98,7 +98,7 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
     <div className="mx-auto w-full max-w-5xl space-y-5 p-4 sm:p-6">
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
-          <ArrowUpFromLine className="h-6 w-6 text-emerald-400" /> Withdraw funds
+          <ArrowUpFromLine className="h-6 w-6 text-primary" /> Withdraw funds
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Withdraw your profits anytime — e-wallets and crypto are processed instantly with zero fees.
@@ -121,7 +121,7 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
             <CardContent className="p-4">
               <div className="mb-2.5 flex items-center justify-between">
                 <span className="text-sm font-bold">1 · Choose trading account</span>
-                <span className="rounded-lg bg-emerald-500/10 px-3 py-1 font-mono text-sm font-bold text-emerald-400">
+                <span className="rounded-lg bg-primary/10 px-3 py-1 font-mono text-sm font-bold tabular-nums text-primary">
                   ${balance.toFixed(2)} available
                 </span>
               </div>
@@ -130,9 +130,9 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
                   <button
                     key={a.id}
                     onClick={() => onSelectAccount(a.id)}
-                    className={`flex items-center justify-between rounded-lg border px-3.5 py-2.5 text-left transition-colors ${
+                    className={`flex items-center justify-between rounded-xl border px-3.5 py-2.5 text-left transition-colors ${
                       a.id === activeAccount?.id
-                        ? "border-emerald-500/50 bg-emerald-500/10"
+                        ? "border-primary/50 bg-primary/10"
                         : "border-border/60 bg-background/40 hover:bg-muted/50"
                     }`}
                   >
@@ -159,8 +159,8 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
                     <button
                       key={m.id}
                       onClick={() => setMethod(m.id)}
-                      className={`rounded-lg border p-3 text-left transition-all ${
-                        active ? "border-emerald-500/50 bg-emerald-500/10" : "border-border/60 bg-background/40 hover:bg-muted/50"
+                      className={`rounded-xl border p-3 text-left transition-all ${
+                        active ? "border-primary/50 bg-primary/10 ring-1 ring-primary/30" : "border-border/60 bg-background/40 hover:bg-muted/50"
                       }`}
                     >
                       <span className={`mb-2 flex h-8 w-8 items-center justify-center rounded-md text-white ${m.tint}`}>
@@ -204,7 +204,7 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
                 <button
                   onClick={() => setAmount(balance.toFixed(2))}
                   disabled={balance < MIN}
-                  className="rounded-md border border-emerald-500/40 bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-300 transition-colors hover:bg-emerald-500/20 disabled:opacity-40"
+                  className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary transition-colors hover:bg-primary/20 disabled:opacity-40"
                 >
                   Withdraw all
                 </button>
@@ -218,7 +218,7 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
         <Card className="h-fit border-border/60 bg-card/60">
           <CardContent className="space-y-4 p-5">
             <div className="flex items-center gap-2 text-sm font-bold">
-              <ReceiptText className="h-4 w-4 text-emerald-400" /> Summary
+              <ReceiptText className="h-4 w-4 text-primary" /> Summary
             </div>
             <div className="space-y-2.5 text-sm">
               <div className="flex justify-between">
@@ -231,7 +231,7 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">You receive</span>
-                <span className="font-mono text-xl font-extrabold text-emerald-400">
+                <span className="font-mono text-xl font-extrabold tabular-nums text-primary">
                   ${(Number.isFinite(amt) && amt > 0 ? amt : 0).toFixed(2)}
                 </span>
               </div>
@@ -245,13 +245,13 @@ export default function Withdraw({ accounts, activeAccount, onSelectAccount, ref
             <Button
               onClick={submit}
               disabled={busy || !activeAccount || !Number.isFinite(amt) || amt < MIN || tooMuch}
-              className="w-full py-2.5 font-bold"
+              className="w-full py-2.5 font-bold shadow-lg shadow-primary/20"
             >
               {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowUpFromLine className="mr-2 h-4 w-4" />}
               {method === "BANK" ? "Request withdrawal" : "Withdraw instantly"}
             </Button>
             <div className="flex items-start gap-2 rounded-lg border border-border/50 bg-background/40 p-3 text-[11px] leading-relaxed text-muted-foreground">
-              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" />
+              <ShieldCheck className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
               Withdrawals are sent to the same method used for deposits. Demo mode — no real funds move.
             </div>
           </CardContent>

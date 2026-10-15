@@ -31,13 +31,14 @@ export default function AuthView({ onBack, onAuthed }: Props) {
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground lg:grid lg:grid-cols-2">
       {/* Left branding panel */}
-      <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-emerald-500/15 via-card to-background p-10 lg:flex">
-        <div className="pointer-events-none absolute -left-24 top-1/3 h-96 w-96 rounded-full bg-emerald-500/10 blur-3xl" />
+      <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary/12 via-card to-background p-10 lg:flex">
+        <div className="pointer-events-none absolute -left-24 top-1/3 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+        <div className="pointer-events-none absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-emerald-500/8 blur-3xl" />
         <Logo size="lg" />
         <div className="relative space-y-6">
           <h2 className="max-w-md text-4xl font-extrabold leading-tight tracking-tight">
             The markets are moving.
-            <span className="block text-emerald-400">Be ready in minutes.</span>
+            <span className="text-gold-shimmer block">Be ready in minutes.</span>
           </h2>
           <div className="space-y-4">
             {[
@@ -48,7 +49,7 @@ export default function AuthView({ onBack, onAuthed }: Props) {
               const I = Icon as typeof Zap;
               return (
                 <div key={t as string} className="flex items-start gap-3.5">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-emerald-500/15 text-emerald-400">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-amber-300/20 to-amber-600/10 text-primary ring-1 ring-primary/25">
                     <I className="h-5 w-5" />
                   </div>
                   <div>
@@ -87,15 +88,15 @@ export default function AuthView({ onBack, onAuthed }: Props) {
             </p>
           </div>
 
-          <Card className="border-border/60 bg-card/60">
+          <Card className="animate-fade-up border-border/60 bg-card/70 shadow-2xl shadow-black/30 backdrop-blur">
             <CardContent className="p-6">
-              <div className="mb-6 grid grid-cols-2 gap-1 rounded-lg bg-muted p-1">
+              <div className="mb-6 grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
                 {(["login", "register"] as const).map((m) => (
                   <button
                     key={m}
                     onClick={() => setMode(m)}
-                    className={`rounded-md py-2 text-sm font-semibold transition-all ${
-                      mode === m ? "bg-background text-foreground shadow" : "text-muted-foreground hover:text-foreground"
+                    className={`rounded-lg py-2 text-sm font-semibold transition-all ${
+                      mode === m ? "bg-card text-foreground shadow ring-1 ring-primary/25" : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
                     {m === "login" ? "Sign in" : "Register"}
@@ -108,7 +109,7 @@ export default function AuthView({ onBack, onAuthed }: Props) {
           </Card>
 
           <p className="mt-6 text-center text-xs leading-relaxed text-muted-foreground">
-            By continuing you agree to Finovation&apos;s Terms of Service and Privacy Policy.
+            By continuing you agree to Finovation&apos;s <span className="text-primary">Terms of Service</span> and <span className="text-primary">Privacy Policy</span>.
             This is a demo platform — no real funds are involved.
           </p>
         </div>

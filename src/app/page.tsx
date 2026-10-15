@@ -148,7 +148,7 @@ function App() {
         <div className="flex flex-col items-center gap-4">
           <Logo size="lg" />
           <div className="h-1 w-32 overflow-hidden rounded-full bg-muted">
-            <div className="h-full w-1/2 animate-pulse rounded-full bg-emerald-500" />
+            <div className="h-full w-1/2 animate-pulse rounded-full bg-gradient-to-r from-amber-300 to-amber-500" />
           </div>
         </div>
       </div>

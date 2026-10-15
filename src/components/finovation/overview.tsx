@@ -1,8 +1,8 @@
 "use client";
 
 // ============================================================
-// Overview / My Account - live stats, equity chart, positions,
-// trading accounts management, recent transactions.
+// Overview / My Account — hero balance card, live stats,
+// equity chart, positions, accounts, recent transactions.
 // ============================================================
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import type { AccountSummary, Transaction, Trade, User } from "@/lib/types";
 import { toast } from "sonner";
 import {
   ArrowDownToLine, ArrowUpFromLine, CandlestickChart, Plus, BadgeCheck,
-  Wallet, ShieldCheck, Gauge, PieChart, ChevronRight, Loader2,
+  Wallet, ShieldCheck, Gauge, PieChart, ChevronRight, Loader2, Eye, Copy, Check,
 } from "lucide-react";
 
 interface Props {
@@ -39,6 +39,7 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
   const [creating, setCreating] = useState(false);
   const [newType, setNewType] = useState("STANDARD");
   const [newLev, setNewLev] = useState("500");
+  const [copied, setCopied] = useState(false);
   const equityHistory = useRef<{ t: number; v: number }[]>([]);
 
   // ticking clock for live PnL
@@ -95,6 +96,13 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
+  const copyNumber = () => {
+    if (!activeAccount) return;
+    navigator.clipboard?.writeText(activeAccount.number).catch(() => {});
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
+  };
+
   const createAccount = async () => {
     setCreating(true);
     try {
@@ -119,12 +127,12 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6 p-4 sm:p-6">
       {/* header */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="animate-fade-up flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
             {greeting}, {user.fullName.split(" ")[0]}
             {user.verified && (
-              <Badge variant="outline" className="gap-1 border-emerald-500/40 text-emerald-400">
+              <Badge variant="outline" className="gap-1 border-primary/40 text-primary">
                 <BadgeCheck className="h-3.5 w-3.5" /> Verified
               </Badge>
             )}
@@ -138,28 +146,81 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
           </p>
         </div>
         <div className="flex gap-2.5">
-          <Button onClick={() => onSection("deposit")} className="font-semibold">
+          <Button onClick={() => onSection("deposit")} className="font-bold shadow-lg shadow-primary/20">
             <ArrowDownToLine className="mr-1.5 h-4 w-4" /> Deposit
           </Button>
-          <Button variant="outline" onClick={() => onSection("withdraw")}>
+          <Button variant="outline" onClick={() => onSection("withdraw")} className="border-border/70 bg-card/50">
             <ArrowUpFromLine className="mr-1.5 h-4 w-4" /> Withdraw
           </Button>
-          <Button variant="outline" onClick={() => onSection("trade")} className="hidden sm:inline-flex">
+          <Button variant="outline" onClick={() => onSection("trade")} className="hidden border-border/70 bg-card/50 sm:inline-flex">
             <CandlestickChart className="mr-1.5 h-4 w-4" /> Trade
           </Button>
         </div>
       </div>
 
+      {/* hero balance card */}
+      {activeAccount && (
+        <div className="animate-fade-up delay-1 relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-primary/15 via-card/80 to-card p-6 sm:p-8">
+          <div className="pointer-events-none absolute -right-16 -top-16 h-52 w-52 rounded-full bg-primary/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-20 right-1/3 h-40 w-40 rounded-full bg-emerald-500/8 blur-3xl" />
+          <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                <Wallet className="h-4 w-4 text-primary" />
+                Total balance · {activeAccount.type} account
+                <button
+                  onClick={copyNumber}
+                  className="inline-flex items-center gap-1 rounded-md border border-border/60 bg-background/40 px-2 py-0.5 font-mono text-[11px] transition-colors hover:bg-muted"
+                  aria-label="Copy account number"
+                >
+                  #{activeAccount.number}
+                  {copied ? <Check className="h-3 w-3 text-emerald-400" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+                </button>
+              </div>
+              <div className="flex flex-wrap items-end gap-x-4 gap-y-1">
+                <span className="font-mono text-4xl font-extrabold tracking-tight tabular-nums sm:text-5xl">
+                  ${activeAccount.balance.toFixed(2)}
+                </span>
+                {activeAccount.floatingPnl !== 0 && (
+                  <PnlText value={activeAccount.floatingPnl} className="pb-1.5 text-base" />
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-muted-foreground">
+                <span className="inline-flex items-center gap-1.5">
+                  <Eye className="h-3.5 w-3.5" /> Equity <span className="font-mono font-semibold tabular-nums text-foreground">${live.equity.toFixed(2)}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  Leverage <span className="font-mono font-semibold text-foreground">1:{activeAccount.leverage}</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5">
+                  Bonus <span className="font-mono font-semibold text-primary">${activeAccount.bonus.toFixed(2)}</span>
+                </span>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-row gap-3 lg:flex-col">
+              <Button onClick={() => onSection("deposit")} className="flex-1 font-bold shadow-lg shadow-primary/25 lg:px-8">
+                <ArrowDownToLine className="mr-1.5 h-4 w-4" /> Deposit
+              </Button>
+              <Button onClick={() => onSection("withdraw")} variant="outline" className="flex-1 border-border/70 bg-card/50 backdrop-blur lg:px-8">
+                <ArrowUpFromLine className="mr-1.5 h-4 w-4" /> Withdraw
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* stat cards */}
-      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
+      <div className="animate-fade-up delay-2 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {stats.map((s) => {
           const I = s.icon;
           return (
-            <Card key={s.label} className="border-border/60 bg-card/60">
+            <Card key={s.label} className="border-border/60 bg-card/60 transition-colors hover:border-border">
               <CardContent className="p-4 sm:p-5">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-medium text-muted-foreground sm:text-sm">{s.label}</span>
-                  <I className="h-4 w-4 text-muted-foreground/70" />
+                  <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted/70">
+                    <I className="h-3.5 w-3.5 text-muted-foreground" />
+                  </span>
                 </div>
                 <div className={`mt-2 font-mono text-lg font-bold tabular-nums sm:text-2xl ${
                   s.green === true ? "text-emerald-400" : s.danger ? "text-amber-400" : ""
@@ -173,7 +234,7 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
         })}
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="animate-fade-up delay-3 grid gap-4 lg:grid-cols-3">
         {/* equity chart */}
         <Card className="border-border/60 bg-card/60 lg:col-span-2">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-2">
@@ -186,18 +247,18 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
                 <AreaChart data={chartData} margin={{ top: 5, right: 5, bottom: 0, left: -14 }}>
                   <defs>
                     <linearGradient id="eq" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#10b981" stopOpacity={0.35} />
-                      <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
+                      <stop offset="0%" stopColor="#f5b23a" stopOpacity={0.35} />
+                      <stop offset="100%" stopColor="#f5b23a" stopOpacity={0} />
                     </linearGradient>
                   </defs>
-                  <XAxis dataKey="t" tick={{ fontSize: 10, fill: "#8b98a9" }} tickLine={false} axisLine={false} minTickGap={40} />
-                  <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "#8b98a9" }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
+                  <XAxis dataKey="t" tick={{ fontSize: 10, fill: "#8b93a5" }} tickLine={false} axisLine={false} minTickGap={40} />
+                  <YAxis domain={["auto", "auto"]} tick={{ fontSize: 10, fill: "#8b93a5" }} tickLine={false} axisLine={false} tickFormatter={(v: number) => `$${v}`} />
                   <Tooltip
-                    contentStyle={{ background: "#111820", border: "1px solid #2a3441", borderRadius: 8, fontSize: 12 }}
-                    labelStyle={{ color: "#8b98a9" }}
+                    contentStyle={{ background: "#1b202b", border: "1px solid rgba(148,163,184,0.18)", borderRadius: 10, fontSize: 12 }}
+                    labelStyle={{ color: "#8b93a5" }}
                     formatter={(v) => [`$${Number(v).toFixed(2)}`, "Equity"]}
                   />
-                  <Area type="monotone" dataKey="v" stroke="#10b981" strokeWidth={2} fill="url(#eq)" isAnimationActive={false} />
+                  <Area type="monotone" dataKey="v" stroke="#f5b23a" strokeWidth={2} fill="url(#eq)" isAnimationActive={false} />
                 </AreaChart>
               </ResponsiveContainer>
             ) : (
@@ -214,7 +275,9 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
             <CardTitle className="text-base">Trading accounts</CardTitle>
             <Dialog open={createOpen} onOpenChange={setCreateOpen}>
               <DialogTrigger asChild>
-                <Button size="sm" variant="outline"><Plus className="mr-1 h-4 w-4" /> New</Button>
+                <Button size="sm" variant="outline" className="border-primary/30 bg-primary/5 text-primary hover:bg-primary/10 hover:text-primary">
+                  <Plus className="mr-1 h-4 w-4" /> New
+                </Button>
               </DialogTrigger>
               <DialogContent>
                 <DialogHeader>
@@ -246,7 +309,7 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
                   </div>
                 </div>
                 <DialogFooter>
-                  <Button onClick={createAccount} disabled={creating} className="font-semibold">
+                  <Button onClick={createAccount} disabled={creating} className="font-bold">
                     {creating ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
                     Create account
                   </Button>
@@ -258,16 +321,21 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
             {accounts.map((a) => (
               <div
                 key={a.id}
-                className={`flex items-center justify-between rounded-lg border px-4 py-3 transition-colors ${
-                  a.id === activeAccount?.id ? "border-emerald-500/40 bg-emerald-500/5" : "border-border/60 bg-background/40"
+                className={`flex items-center justify-between rounded-xl border px-4 py-3 transition-colors ${
+                  a.id === activeAccount?.id ? "border-primary/40 bg-primary/5" : "border-border/60 bg-background/40"
                 }`}
               >
                 <div>
-                  <div className="font-mono text-sm font-semibold">#{a.number}</div>
+                  <div className="flex items-center gap-2 font-mono text-sm font-semibold">
+                    #{a.number}
+                    {a.id === activeAccount?.id && (
+                      <span className="rounded bg-primary/15 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary">Active</span>
+                    )}
+                  </div>
                   <div className="text-xs text-muted-foreground">{a.type} · 1:{a.leverage} · {a.openPositions} open</div>
                 </div>
                 <div className="text-right">
-                  <div className="font-mono text-sm font-bold">${a.balance.toFixed(2)}</div>
+                  <div className="font-mono text-sm font-bold tabular-nums">${a.balance.toFixed(2)}</div>
                   {a.floatingPnl !== 0 && <PnlText value={a.floatingPnl} className="text-xs" />}
                 </div>
               </div>
@@ -276,20 +344,22 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
         </Card>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="animate-fade-up delay-4 grid gap-4 lg:grid-cols-2">
         {/* open positions */}
         <Card className="border-border/60 bg-card/60">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-base">Open positions</CardTitle>
-            <Button size="sm" variant="ghost" className="text-emerald-400" onClick={() => onSection("trade")}>
+            <Button size="sm" variant="ghost" className="text-primary hover:bg-primary/10 hover:text-primary" onClick={() => onSection("trade")}>
               Trade terminal <ChevronRight className="h-4 w-4" />
             </Button>
           </CardHeader>
           <CardContent>
             {accTrades.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-10 text-center">
-                <CandlestickChart className="h-10 w-10 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">No open positions. Head to the terminal to place your first trade.</p>
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                  <CandlestickChart className="h-6 w-6 text-muted-foreground/50" />
+                </span>
+                <p className="max-w-60 text-sm text-muted-foreground">No open positions. Head to the terminal to place your first trade.</p>
                 <Button size="sm" variant="outline" onClick={() => onSection("trade")}>Open terminal</Button>
               </div>
             ) : (
@@ -299,14 +369,14 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
                   const pnl = positionPnl(t.symbol, t.side, t.volume, t.openPrice, now);
                   const cur = t.side === "BUY" ? quotes[t.symbol]?.bid : quotes[t.symbol]?.ask;
                   return (
-                    <div key={t.id} className="flex items-center justify-between rounded-lg border border-border/50 bg-background/40 px-3.5 py-2.5">
+                    <div key={t.id} className="flex items-center justify-between rounded-xl border border-border/50 bg-background/40 px-3.5 py-2.5 transition-colors hover:bg-muted/40">
                       <div className="flex items-center gap-3">
                         <SymbolIcon symbol={t.symbol} />
                         <div>
                           <div className="flex items-center gap-2 text-sm font-semibold">
                             {t.symbol} <SideBadge side={t.side} />
                           </div>
-                          <div className="text-xs text-muted-foreground">
+                          <div className="text-xs tabular-nums text-muted-foreground">
                             {t.volume} lots @ {t.openPrice.toFixed(def?.digits ?? 2)} → {cur?.toFixed(def?.digits ?? 2) ?? "—"}
                           </div>
                         </div>
@@ -324,21 +394,23 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
         <Card className="border-border/60 bg-card/60">
           <CardHeader className="flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-base">Recent transactions</CardTitle>
-            <Button size="sm" variant="ghost" className="text-emerald-400" onClick={() => onSection("history")}>
+            <Button size="sm" variant="ghost" className="text-primary hover:bg-primary/10 hover:text-primary" onClick={() => onSection("history")}>
               Full history <ChevronRight className="h-4 w-4" />
             </Button>
           </CardHeader>
           <CardContent>
             {transactions.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-10 text-center">
-                <Wallet className="h-10 w-10 text-muted-foreground/40" />
-                <p className="text-sm text-muted-foreground">No transactions yet. Make your first deposit to start trading.</p>
+                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-muted/60">
+                  <Wallet className="h-6 w-6 text-muted-foreground/50" />
+                </span>
+                <p className="max-w-60 text-sm text-muted-foreground">No transactions yet. Make your first deposit to start trading.</p>
                 <Button size="sm" variant="outline" onClick={() => onSection("deposit")}>Deposit funds</Button>
               </div>
             ) : (
               <div className="max-h-72 space-y-2 overflow-y-auto pr-1">
                 {transactions.map((tx) => (
-                  <div key={tx.id} className="flex items-center justify-between rounded-lg border border-border/50 bg-background/40 px-3.5 py-2.5">
+                  <div key={tx.id} className="flex items-center justify-between rounded-xl border border-border/50 bg-background/40 px-3.5 py-2.5 transition-colors hover:bg-muted/40">
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 text-sm font-semibold">
                         <TypeBadge type={tx.type} />
@@ -349,7 +421,7 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
                       </div>
                     </div>
                     <div className="shrink-0 text-right">
-                      <div className={`font-mono text-sm font-bold ${tx.type === "DEPOSIT" ? "text-emerald-400" : "text-amber-400"}`}>
+                      <div className={`font-mono text-sm font-bold tabular-nums ${tx.type === "DEPOSIT" ? "text-emerald-400" : "text-amber-400"}`}>
                         {tx.type === "DEPOSIT" ? "+" : "-"}${tx.amount.toFixed(2)}
                       </div>
                       <StatusBadge status={tx.status} />

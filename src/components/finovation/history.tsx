@@ -89,7 +89,7 @@ export default function HistoryView({ accounts, activeAccount }: Props) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
-            <History className="h-6 w-6 text-emerald-400" /> History
+            <History className="h-6 w-6 text-primary" /> History
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">Review your completed trades and money movements.</p>
         </div>
@@ -154,7 +154,7 @@ export default function HistoryView({ accounts, activeAccount }: Props) {
                 <button
                   onClick={() => setAccountFilter("all")}
                   className={`rounded-md border px-3 py-1.5 text-xs font-bold transition-colors ${
-                    accountFilter === "all" ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300" : "border-border/60 text-muted-foreground hover:bg-muted"
+                    accountFilter === "all" ? "border-primary/50 bg-primary/10 text-primary" : "border-border/60 text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   All accounts
@@ -164,7 +164,7 @@ export default function HistoryView({ accounts, activeAccount }: Props) {
                     key={a.id}
                     onClick={() => setAccountFilter(a.id)}
                     className={`rounded-md border px-3 py-1.5 font-mono text-xs font-bold transition-colors ${
-                      accountFilter === a.id ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300" : "border-border/60 text-muted-foreground hover:bg-muted"
+                      accountFilter === a.id ? "border-primary/50 bg-primary/10 text-primary" : "border-border/60 text-muted-foreground hover:bg-muted"
                     }`}
                   >
                     #{a.number}
@@ -232,7 +232,7 @@ export default function HistoryView({ accounts, activeAccount }: Props) {
                 key={f}
                 onClick={() => setTxFilter(f)}
                 className={`rounded-md border px-3.5 py-1.5 text-xs font-bold transition-colors ${
-                  txFilter === f ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300" : "border-border/60 text-muted-foreground hover:bg-muted"
+                  txFilter === f ? "border-primary/50 bg-primary/10 text-primary" : "border-border/60 text-muted-foreground hover:bg-muted"
                 }`}
               >
                 {f === "ALL" ? "All transactions" : f === "DEPOSIT" ? "Deposits" : "Withdrawals"}
@@ -248,7 +248,7 @@ export default function HistoryView({ accounts, activeAccount }: Props) {
                 <div className="max-h-[34rem] overflow-y-auto">
                   {filteredTx.map((t) => (
                     <div key={t.id} className="flex flex-wrap items-center gap-3 border-b border-border/40 px-4 py-3 last:border-0">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-muted">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-muted">
                         {t.type === "DEPOSIT"
                           ? <TrendingUp className="h-4 w-4 text-emerald-400" />
                           : <TrendingDown className="h-4 w-4 text-amber-400" />}
@@ -306,7 +306,9 @@ function StatCard({
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <span className="text-xs font-medium text-muted-foreground sm:text-sm">{label}</span>
-          <I className="h-4 w-4 text-muted-foreground/70" />
+          <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-muted/70">
+            <I className="h-3.5 w-3.5 text-muted-foreground" />
+          </span>
         </div>
         <div className={`mt-1.5 font-mono text-lg font-bold tabular-nums sm:text-xl ${
           tone === "good" ? "text-emerald-400" : tone === "bad" ? "text-red-400" : ""

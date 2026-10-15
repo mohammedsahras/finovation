@@ -205,7 +205,7 @@ export default function TradeTerminal({ activeAccount, openTrades, refreshMe }: 
                   key={c}
                   onClick={() => setCategory(c)}
                   className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
-                    category === c ? "bg-emerald-500/15 text-emerald-300" : "text-muted-foreground hover:bg-muted"
+                    category === c ? "bg-primary/15 text-primary" : "text-muted-foreground hover:bg-muted"
                   }`}
                 >
                   {c}
@@ -222,11 +222,11 @@ export default function TradeTerminal({ activeAccount, openTrades, refreshMe }: 
                     key={inst.symbol}
                     onClick={() => setSymbol(inst.symbol)}
                     className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left transition-colors ${
-                      active ? "bg-emerald-500/10 ring-1 ring-emerald-500/30" : "hover:bg-muted/60"
+                      active ? "bg-primary/10 ring-1 ring-primary/30" : "hover:bg-muted/60"
                     }`}
                   >
                     <div className="min-w-0">
-                      <div className={`text-[13px] font-bold ${active ? "text-emerald-300" : ""}`}>{inst.symbol}</div>
+                      <div className={`text-[13px] font-bold ${active ? "text-primary" : ""}`}>{inst.symbol}</div>
                       <div className="truncate text-[10px] text-muted-foreground">{inst.name}</div>
                     </div>
                     <div className="shrink-0 text-right">
@@ -294,7 +294,7 @@ export default function TradeTerminal({ activeAccount, openTrades, refreshMe }: 
                 <span className="text-sm font-bold">
                   Open positions
                   {accPositions.length > 0 && (
-                    <span className="ml-2 rounded-full bg-emerald-500/15 px-2 py-0.5 text-xs font-bold text-emerald-300">
+                    <span className="ml-2 rounded-full bg-primary/15 px-2 py-0.5 text-xs font-bold tabular-nums text-primary">
                       {accPositions.length}
                     </span>
                   )}
@@ -352,7 +352,7 @@ export default function TradeTerminal({ activeAccount, openTrades, refreshMe }: 
         <Card className="h-fit border-border/60 bg-card/60">
           <CardContent className="space-y-4 p-4">
             <div className="flex items-center gap-2 text-sm font-bold">
-              <CandlestickChart className="h-4 w-4 text-emerald-400" /> Order ticket
+              <CandlestickChart className="h-4 w-4 text-primary" /> Order ticket
             </div>
 
             {/* volume */}
@@ -382,7 +382,7 @@ export default function TradeTerminal({ activeAccount, openTrades, refreshMe }: 
                     onClick={() => setVolume(v.toFixed(2))}
                     className={`flex-1 rounded-md border px-1 py-1 text-[11px] font-semibold transition-colors ${
                       Number(volume) === v
-                        ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-300"
+                        ? "border-primary/40 bg-primary/10 text-primary"
                         : "border-border/60 text-muted-foreground hover:bg-muted"
                     }`}
                   >

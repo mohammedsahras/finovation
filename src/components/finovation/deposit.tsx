@@ -111,7 +111,7 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
     <div className="mx-auto w-full max-w-5xl space-y-5 p-4 sm:p-6">
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
-          <ArrowDownToLine className="h-6 w-6 text-emerald-400" /> Deposit funds
+          <ArrowDownToLine className="h-6 w-6 text-primary" /> Deposit funds
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Fund your account instantly — cards, e-wallets and crypto are credited in seconds.
@@ -119,9 +119,9 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
       </div>
 
       {firstDeposit && (
-        <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3">
-          <BadgePercent className="h-5 w-5 shrink-0 text-emerald-400" />
-          <p className="text-sm text-emerald-200">
+        <div className="animate-fade-up flex items-center gap-3 rounded-xl border border-primary/30 bg-gradient-to-r from-primary/12 to-primary/5 px-4 py-3">
+          <BadgePercent className="h-5 w-5 shrink-0 text-primary" />
+          <p className="text-sm text-primary/95">
             <span className="font-bold">50% welcome bonus active</span> — your first deposit gets up to $500 extra trading credit, automatically.
           </p>
         </div>
@@ -138,9 +138,9 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
                   <button
                     key={a.id}
                     onClick={() => onSelectAccount(a.id)}
-                    className={`flex items-center justify-between rounded-lg border px-3.5 py-2.5 text-left transition-colors ${
+                    className={`flex items-center justify-between rounded-xl border px-3.5 py-2.5 text-left transition-colors ${
                       a.id === activeAccount?.id
-                        ? "border-emerald-500/50 bg-emerald-500/10"
+                        ? "border-primary/50 bg-primary/10"
                         : "border-border/60 bg-background/40 hover:bg-muted/50"
                     }`}
                   >
@@ -172,8 +172,8 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
                     <button
                       key={m.id}
                       onClick={() => setMethod(m.id)}
-                      className={`rounded-lg border p-3 text-left transition-all ${
-                        active ? "border-emerald-500/50 bg-emerald-500/10" : "border-border/60 bg-background/40 hover:bg-muted/50"
+                      className={`rounded-xl border p-3 text-left transition-all ${
+                        active ? "border-primary/50 bg-primary/10 ring-1 ring-primary/30" : "border-border/60 bg-background/40 hover:bg-muted/50"
                       }`}
                     >
                       <span className={`mb-2 flex h-8 w-8 items-center justify-center rounded-md text-white ${m.tint}`}>
@@ -210,7 +210,7 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
                     onClick={() => setAmount(String(p))}
                     className={`rounded-md border px-3 py-1.5 text-xs font-bold transition-colors ${
                       Number(amount) === p
-                        ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-300"
+                        ? "border-primary/50 bg-primary/10 text-primary"
                         : "border-border/60 text-muted-foreground hover:bg-muted"
                     }`}
                   >
@@ -226,7 +226,7 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
         <Card className="h-fit border-border/60 bg-card/60">
           <CardContent className="space-y-4 p-5">
             <div className="flex items-center gap-2 text-sm font-bold">
-              <ReceiptText className="h-4 w-4 text-emerald-400" /> Summary
+              <ReceiptText className="h-4 w-4 text-primary" /> Summary
             </div>
             <div className="space-y-2.5 text-sm">
               <div className="flex justify-between">
@@ -242,15 +242,15 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
                 <span className="font-mono font-bold">${(Number.isFinite(amt) ? amt : 0).toFixed(2)}</span>
               </div>
               {bonus > 0 && (
-                <div className="flex justify-between text-emerald-400">
+                <div className="flex justify-between text-primary">
                   <span>Welcome bonus (50%)</span>
-                  <span className="font-mono font-bold">+${bonus.toFixed(2)}</span>
+                  <span className="font-mono font-bold tabular-nums">+${bonus.toFixed(2)}</span>
                 </div>
               )}
               <div className="border-t border-border/50 pt-2.5">
                 <div className="flex items-baseline justify-between">
                   <span className="text-muted-foreground">Credited to account</span>
-                  <span className="font-mono text-xl font-extrabold text-emerald-400">
+                  <span className="font-mono text-xl font-extrabold tabular-nums text-primary">
                     ${credit.toFixed(2)}
                   </span>
                 </div>
@@ -264,7 +264,7 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
             <Button
               onClick={submit}
               disabled={busy || !activeAccount || !Number.isFinite(amt) || amt < MIN}
-              className="w-full py-2.5 font-bold"
+              className="w-full py-2.5 font-bold shadow-lg shadow-primary/20"
             >
               {busy ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <ArrowDownToLine className="mr-2 h-4 w-4" />}
               {method === "BANK" ? "Create bank transfer" : "Deposit instantly"}
@@ -330,7 +330,7 @@ export default function Deposit({ accounts, activeAccount, onSelectAccount, refr
             {receipt?.reference}
             {copied ? <CheckCircle2 className="h-4 w-4 text-emerald-400" /> : <Copy className="h-4 w-4 text-muted-foreground" />}
           </button>
-          {receipt?.note && <p className="text-xs text-emerald-300">{receipt.note}</p>}
+          {receipt?.note && <p className="text-xs text-primary/90">{receipt.note}</p>}
           <DialogFooter>
             <Button className="w-full font-semibold" onClick={() => setReceipt(null)}>Done</Button>
           </DialogFooter>

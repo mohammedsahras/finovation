@@ -25,3 +25,23 @@ Stage Summary:
 - Key fixes: Prisma Notification relation, stale Prisma client restart, hooks lint compliance
 - Services: Next.js dev :3000, price-service socket.io :3003 (via Caddy :81 XTransformPort)
 - Credentials used in test: kasun@finovation.io / SecurePass123
+
+---
+Task ID: 2
+Agent: Main agent (Super Z)
+Task: Professional UX/UI overhaul for Finovation ("Midnight & Gold" design system)
+
+Work Log:
+- Rebuilt globals.css design tokens: navy-tinted dark theme (oklch hue 258) + gold brand primary (--primary #f0b13f dark / #da950b light), layered surfaces, custom scrollbars, ::selection, shimmer/float/ticker/fade-up keyframes, .glass + .text-gold-shimmer utilities; green/red reserved for trading semantics
+- Rewrote ui-bits.tsx: gold gradient logo w/ ring + glow, added Sparkline component (SVG area path, green/red by trend), SymbolIcon per-category rings
+- Rewrote dashboard.tsx: gold active-nav with left gradient indicator bar, glass topbar, gradient sidebar balance card w/ floating PnL + account chip, gold notification badge, glass mobile bottom nav w/ top indicator, grouped account dropdown
+- Rewrote landing.tsx: aurora-orb hero + gold shimmer headline, live scrolling ticker tape (pause on hover, edge fades), sparklines in market-watch widget + market cards, gold category pills, testimonials section (5-star), refined stats strip w/ dividers, gold MOST POPULAR card, staggered fade-up animations
+- Rewrote overview.tsx: Exness-style hero balance card (gradient, copy account number, equity/leverage/bonus row, Deposit/Withdraw actions), icon-chip stat cards, gold equity chart (was emerald), ACTIVE badge on accounts, polished empty states
+- Accent consistency pass on auth-view (gold feature tiles, shimmer heading, ring tab switcher), deposit (gold bonus banner, method/account/preset selections, summary), withdraw (gold chips/summary/receipt), history (gold filters, icon-chip stat cards), profile (gold avatar/verified/section icons), trade.tsx (gold category/instrument/volume/positions accents — BUY/SELL kept green/red)
+- Fixed stale CSS chunk: dev server watcher missed globals.css changes → killed next dev, restarted via .zscripts/dev.sh (Next :3000 + price-service :3003)
+- Browser-verified end-to-end via agent-browser on gateway :81: landing (hero/ticker/markets), register Alex Rivera, dashboard, deposit $500 (+$250 bonus receipt), trade EURUSD BUY 0.01 (live PnL -$0.04, entry line), close (+$0.27), history stats (100% win rate), withdraw all $750.27 instant receipt, profile, mobile 390px (overview + trade + landing); zero console errors, lint clean
+
+Stage Summary:
+- Deliverable: Finovation with cohesive professional "Midnight & Gold" design system across all 9 views
+- Design language: gold = brand/CTA/active, emerald/red = PnL/BUY/SELL semantics, navy-tinted surfaces, glass chrome, staggered entrance animations
+- All flows verified working; test account alex.rivera@finovation.io / TradingPro2026 (balance $0 after full withdrawal, $250 bonus retained)

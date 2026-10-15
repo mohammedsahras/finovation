@@ -81,7 +81,7 @@ export default function Profile({ user, refreshMe }: Props) {
     <div className="mx-auto w-full max-w-4xl space-y-5 p-4 sm:p-6">
       <div>
         <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight">
-          <UserRound className="h-6 w-6 text-emerald-400" /> Profile &amp; security
+          <UserRound className="h-6 w-6 text-primary" /> Profile &amp; security
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">Manage your personal details and account protection.</p>
       </div>
@@ -89,14 +89,14 @@ export default function Profile({ user, refreshMe }: Props) {
       {/* identity card */}
       <Card className="border-border/60 bg-card/60">
         <CardContent className="flex flex-wrap items-center gap-4 p-5">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 text-xl font-extrabold text-slate-950">
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-amber-200 via-amber-400 to-amber-600 text-xl font-extrabold text-[#20160a] shadow-lg shadow-primary/25 ring-1 ring-amber-300/40">
             {user.fullName.split(" ").map((p) => p[0]).slice(0, 2).join("").toUpperCase()}
           </div>
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <h2 className="truncate text-lg font-bold">{user.fullName}</h2>
               {user.verified ? (
-                <Badge variant="outline" className="gap-1 border-emerald-500/40 text-emerald-400">
+                <Badge variant="outline" className="gap-1 border-primary/40 text-primary">
                   <BadgeCheck className="h-3.5 w-3.5" /> Verified
                 </Badge>
               ) : (
@@ -156,7 +156,7 @@ export default function Profile({ user, refreshMe }: Props) {
           <Card className="border-border/60 bg-card/60">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base">
-                <KeyRound className="h-4 w-4 text-emerald-400" /> Change password
+                <KeyRound className="h-4 w-4 text-primary" /> Change password
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -183,7 +183,7 @@ export default function Profile({ user, refreshMe }: Props) {
           <Card className="border-border/60 bg-card/60">
             <CardHeader className="pb-2">
               <CardTitle className="flex items-center gap-2 text-base">
-                <Lock className="h-4 w-4 text-emerald-400" /> Security status
+                <Lock className="h-4 w-4 text-primary" /> Security status
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
@@ -194,7 +194,7 @@ export default function Profile({ user, refreshMe }: Props) {
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-3">
                   {item.ok ? (
-                    <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-emerald-400" />
+                    <BadgeCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                   ) : (
                     <Info className="mt-0.5 h-5 w-5 shrink-0 text-amber-400" />
                   )}
