@@ -42,6 +42,7 @@ export interface Trade {
   swap: number;
   status: "OPEN" | "CLOSED";
   comment?: string | null;
+  accountId: string;
   openedAt: string;
   closedAt?: string | null;
 }

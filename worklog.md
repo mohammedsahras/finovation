@@ -148,3 +148,27 @@ Stage Summary:
 - Deliverable: living-market animated backdrop system across landing/auth/dashboard, Midnight & Gold aesthetic preserved, 60 FPS, reduced-motion + tab-hidden aware
 - SQLite database untouched and verified serving all platform data
 - Screenshots: shot-anim-{hero-1,hero-2,auth,dashboard,mobile,final-dashboard}.png
+
+---
+Task ID: 8
+Agent: Main agent (Super Z)
+Task: "Find and fix any errors in the website code" — full static + runtime error audit
+
+Work Log:
+- TypeScript audit (tsc --noEmit): found Trade interface missing accountId field -> 3 type errors (history.tsx:56, overview.tsx:59, trade.tsx:73); fixed by adding accountId: string to src/lib/types.ts
+- Build-safety: tsconfig included unrelated skills/ tooling scripts (pre-existing TS errors would break production build) -> added "skills" to tsconfig exclude; tsc now 100% clean
+- CRITICAL logic bug (bonus double-count): deposit route credited balance by amount+bonus while equity = balance + bonus (summarizeAccount, trades margin check) -> bonus counted twice; UI showed contradictory equity (topbar $255.09 vs overview $5.60). Fixed deposit route to credit bonus ONLY to bonus field (MT convention: bonus = separate trading credit, not withdrawable cash)
+- overview.tsx live equity computation excluded bonus -> aligned to server definition (balance + bonus + floating); verified all 3 equity displays now agree ($255.09 topbar/hero/stat-card)
+- close route returned STALE account summary (balance fetched before P/L booking) -> re-fetches account before summarizeAccount; verified response balance = server truth (99.97 = 99.97)
+- Partial close created no notification (full close did) -> added "Position partially closed" notification
+- accounts POST parsed req.json() without try/catch (malformed JSON -> unhandled -> HTML 500) -> wrapped with fail("Invalid request body")
+- processSlTp matched symbols via String.includes (substring collision hazard, e.g. a future "EUR" symbol would match "EURUSD") -> Set-based lookup
+- Reviewed but clean: withdraw route (bonus correctly locked, min $10, bank pending), deposit validations, register, auth/me, profile PUT/password, notifications, client-api helper, auth.ts (scrypt + HMAC, timing-safe), market.ts engine, price-service socket loop, page.tsx polling
+- Verification: tsc clean, ESLint clean on all touched files, production build passes (17 routes), dev server restarted post-build
+- Runtime probes: fresh user audit.final@finovation.io first deposit $100 -> balance 100 / bonus 50 / equity 150 (was balance 150 + bonus 50 = 200 double-count before fix); open+close cycle -> close-response balance matches DB; UI trade cycle BUY -> Close all booked +$0.38 (5.60 -> 5.98); zero page/console errors
+
+Stage Summary:
+- 8 code errors fixed (1 TS type, 1 build-safety, 2 critical logic, 1 stale-response, 3 robustness)
+- Bonus accounting now fully consistent MT-style: balance = withdrawable cash, bonus = trading-only credit, equity = balance + bonus + floating everywhere (server, margin checks, UI)
+- Note: alex.rivera's $249.49 bonus is legacy demo credit retained intentionally; new deposits follow correct accounting
+- Screenshots: shot-fix-overview.png

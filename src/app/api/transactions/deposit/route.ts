@@ -50,7 +50,10 @@ export async function POST(req: Request) {
       await db.account.update({
         where: { id: account.id },
         data: {
-          balance: { increment: amount + bonus },
+          // Bonus is credited ONLY to the bonus field (separate trading
+          // credit, not withdrawable cash). Equity = balance + bonus, so
+          // merging it into balance here would double-count it.
+          balance: { increment: amount },
           bonus: bonus > 0 ? { increment: bonus } : undefined,
         },
       });

@@ -72,6 +72,14 @@ export async function POST(req: Request) {
         }
         await db.account.update({ where: { id: trade.accountId }, data: accData });
       }
+      await db.notification.create({
+        data: {
+          userId: user.id,
+          title: `Position partially closed - #${trade.ticket}`,
+          body: `${trade.symbol} ${trade.side} ${closeVolume} of ${trade.volume} lots @ ${closePrice}. P/L ${pnl >= 0 ? "+" : ""}$${pnl.toFixed(2)}`,
+          type: pnl >= 0 ? "SUCCESS" : "WARNING",
+        },
+      });
     } else {
       const pnl = await closeTradeAtPrice(trade, closePrice);
       await db.notification.create({
@@ -86,10 +94,13 @@ export async function POST(req: Request) {
 
     const freshTrades = await db.trade.findMany({ where: { accountId: account.id, status: "OPEN" } });
     const freshTrade = await db.trade.findUnique({ where: { id: closingTradeId } });
+    // Re-fetch the account so the summary reflects the just-booked P/L
+    // (the earlier fetch predates the balance update above).
+    const freshAccount = await db.account.findUnique({ where: { id: account.id } });
     return ok({
       closedTicket: trade.ticket,
       trade: freshTrade,
-      account: summarizeAccount(account, freshTrades),
+      account: summarizeAccount(freshAccount ?? account, freshTrades),
     });
   } catch {
     return fail("Failed to close position. Please try again.", 500);

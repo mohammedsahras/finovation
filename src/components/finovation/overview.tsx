@@ -68,7 +68,9 @@ export default function Overview({ user, accounts, activeAccount, openTrades, on
       floating += positionPnl(t.symbol, t.side, t.volume, t.openPrice, now);
       margin += marginRequired(t.symbol, t.volume, t.openPrice, activeAccount.leverage);
     }
-    const equity = activeAccount.balance + floating;
+    // Equity matches the server definition (see summarizeAccount):
+    // balance + bonus credit + floating P/L.
+    const equity = activeAccount.balance + (activeAccount.bonus ?? 0) + floating;
     return {
       equity,
       margin,

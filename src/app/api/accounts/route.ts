@@ -27,7 +27,12 @@ export async function POST(req: Request) {
   const user = await requireUser(req);
   if (!user) return fail("Unauthorized", 401);
 
-  const body = await req.json();
+  let body: Record<string, unknown> = {};
+  try {
+    body = await req.json();
+  } catch {
+    return fail("Invalid request body");
+  }
   const type = String(body.type || "STANDARD").toUpperCase();
   if (!["STANDARD", "PRO", "ZERO"].includes(type)) return fail("Invalid account type");
 

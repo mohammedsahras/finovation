@@ -107,14 +107,14 @@ export function round2(v: number): number {
  * Called whenever the client polls /api/accounts. Returns closed tickets.
  */
 export async function processSlTp(userId: string): Promise<string[]> {
-  const symbols = allSymbols().join(",");
+  const symbols = new Set(allSymbols());
   const open = await db.trade.findMany({ where: { userId, status: "OPEN" } });
   if (open.length === 0) return [];
   const t = Date.now();
   const closed: string[] = [];
 
   for (const tr of open) {
-    if (!symbols.includes(tr.symbol)) continue;
+    if (!symbols.has(tr.symbol)) continue;
     const q = quote(tr.symbol, t);
     const isBuy = tr.side === "BUY";
     let closePrice: number | null = null;
