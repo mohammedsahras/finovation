@@ -105,3 +105,22 @@ Stage Summary:
 - User-facing error eliminated: trading now works on bonus credit (standard MT behavior), error toast no longer appears on normal trades
 - 6 code fixes + 1 data repair; every interactive element in the app clicked and verified working
 - Account state: alex.rivera balance $0.00 / bonus $249.49; secondary account #104817415 $0.00; new test user testuser@finovation.io / TestPass123 ($0.00)
+
+---
+Task ID: 6
+Agent: Main agent (Super Z)
+Task: "Make all create and other buttons work / remove errors" — full-site button audit + 3 fixes
+
+Work Log:
+- API-level probe of every create/write endpoint: register, login, accounts (create), transactions/deposit, transactions/withdraw, notifications read-all — all 200 OK
+- Browser audit (agent-browser, desktop 1280px + mobile 390px) of every interactive element: landing nav/CTAs/market cards/category tabs, sign in/out, register E2E (new user maria.silva@finovation.io created via UI), sidebar nav, mobile bottom nav, notifications + Mark all read (verified conditional render: hidden at 0 unread, shown+working when unread), account dropdown, create-account dialog (type/leverage comboboxes, ZERO 1:1000 account #103150499 created), copy-account, deposit flow (Bitcoin+$250, receipt DEP-85345498, copy-ref, Done), withdraw flow (incl. correct disabled guard when balance < $10 min, withdraw-all $250, receipt WDR-12266639), trade terminal (volume controls/presets, SL/TP fill, BUY 0.01 opened+closed, SELL 0.05 opened, partial close 0.05->0.03 server-verified, close all, modify SL/TP server-verified 1.0795/1.095), history (tabs, symbol/account filters, refresh, stats 3W/4L consistent with audit trades), profile save (server-verified phone/country persistence)
+- FIX 1 (CRITICAL): Update-password button NEVER worked — /api/profile/password imported verifyPassword/hashPassword from @/lib/api (not exported there; they live in @/lib/auth) -> every POST 500. Fixed import; verified: wrong pw -> clean 400 + visible error toast, correct change -> success toast + login works with new pw + fields cleared (reverted to TradingPro2026 after test)
+- FIX 2 (CRITICAL): All toasts invisible app-wide — layout.tsx mounted shadcn Radix Toaster (useToast-based) but all 7 views call sonner's toast(); swapped to @/components/ui/sonner Toaster with theme="dark" position="bottom-right" richColors closeButton. Verified: "Profile updated", "Account created — welcome to Finovation!", "Current password is incorrect" all render (screenshot shot-audit-profile-toast.png)
+- FIX 3 (UX): "Open Account" CTA opened the Sign-in tab — AuthView now accepts initialMode prop; page.tsx tracks authMode state (onRegister->"register", onLogin->"login"); "Open Account" now shows "Create your account"
+- Error sweep: 25 log entries all explained — 1x404 was my own probe at wrong path (/api/deposits), 24x500 clustered in the ~30s HMR recompile window during fixes (compile 1.2-1.6s on first request); zero errors after line 2011, current traffic 100% 200
+- ESLint clean on all edited files; fresh browser context loads with zero console/page errors; float32 artifacts seen in a11y snapshots (0.009999..., 1.08000004...) confirmed Chromium snapshot-layer quirks — DOM values are clean "0.01"/"1.08", invisible to users
+
+Stage Summary:
+- 2 critical button bugs fixed (password change 500, toast system dead) + 1 UX fix (register entry point)
+- Every button on every view clicked and verified working, desktop + mobile, zero errors
+- Accounts: alex.rivera (main $5.60, bonus $249.49, 3W/4L), maria.silva@finovation.io / MariaPass2026 (new, $0), testuser, probe.create.test (probe artifacts)

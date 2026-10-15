@@ -23,10 +23,11 @@ const COUNTRIES = [
 interface Props {
   onBack: () => void;
   onAuthed: (token: string) => void;
+  initialMode?: "login" | "register";
 }
 
-export default function AuthView({ onBack, onAuthed }: Props) {
-  const [mode, setMode] = useState<"login" | "register">("login");
+export default function AuthView({ onBack, onAuthed, initialMode = "login" }: Props) {
+  const [mode, setMode] = useState<"login" | "register">(initialMode);
 
   return (
     <div className="flex min-h-screen flex-col bg-background text-foreground lg:grid lg:grid-cols-2">

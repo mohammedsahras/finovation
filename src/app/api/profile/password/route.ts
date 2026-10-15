@@ -1,5 +1,6 @@
 import { db } from "@/lib/db";
-import { ok, fail, requireUser, verifyPassword, hashPassword } from "@/lib/api";
+import { ok, fail, requireUser } from "@/lib/api";
+import { verifyPassword, hashPassword } from "@/lib/auth";
 
 export async function POST(req: Request) {
   const user = await requireUser(req);

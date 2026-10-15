@@ -32,6 +32,7 @@ export default function Home() {
 
 function App() {
   const [view, setView] = useState<View>("landing");
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [booting, setBooting] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const [accounts, setAccounts] = useState<AccountSummary[]>([]);
@@ -158,7 +159,16 @@ function App() {
   if (view === "landing") {
     return (
       <div className="dark">
-        <Landing onLogin={() => setView("auth")} onRegister={() => setView("auth")} />
+        <Landing
+          onLogin={() => {
+            setAuthMode("login");
+            setView("auth");
+          }}
+          onRegister={() => {
+            setAuthMode("register");
+            setView("auth");
+          }}
+        />
       </div>
     );
   }
@@ -166,7 +176,11 @@ function App() {
   if (view === "auth" || !user) {
     return (
       <div className="dark">
-        <AuthView onBack={() => setView("landing")} onAuthed={handleAuthed} />
+        <AuthView
+          onBack={() => setView("landing")}
+          onAuthed={handleAuthed}
+          initialMode={authMode}
+        />
       </div>
     );
   }
