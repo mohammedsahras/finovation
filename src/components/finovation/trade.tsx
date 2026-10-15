@@ -63,8 +63,9 @@ export default function TradeTerminal({ activeAccount, openTrades, refreshMe }: 
     const s = search.trim().toLowerCase();
     return INSTRUMENTS.filter(
       (i) =>
-        (category === "All" || i.category === category) &&
-        (!s || i.symbol.toLowerCase().includes(s) || i.name.toLowerCase().includes(s))
+        // Searching scans every category; browsing applies the category filter.
+        (!s || i.symbol.toLowerCase().includes(s) || i.name.toLowerCase().includes(s)) &&
+        (s || category === "All" || i.category === category)
     );
   }, [category, search]);
 
@@ -81,7 +82,8 @@ export default function TradeTerminal({ activeAccount, openTrades, refreshMe }: 
   const vol = Number(volume);
   const liveQ = useMemo(() => quote(symbol, now), [symbol, now]);
   const margin = def && vol > 0 ? marginRequired(symbol, vol, liveQ.mid, activeAccount?.leverage ?? 500) : 0;
-  const freeMargin = activeAccount ? activeAccount.balance - margin : 0;
+  // Free margin after opening = server freeMargin (balance + bonus + floating − used margin) minus this order's margin.
+  const freeMargin = activeAccount ? activeAccount.freeMargin - margin : 0;
 
   const placeOrder = async (side: "BUY" | "SELL") => {
     if (!activeAccount) return toast.error("Create a trading account first");

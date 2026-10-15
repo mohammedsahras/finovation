@@ -75,7 +75,9 @@ export function summarizeAccount(
     floatingPnl += positionPnl(tr.symbol, tr.side, tr.volume, tr.openPrice, t);
     margin += marginRequired(tr.symbol, tr.volume, tr.openPrice, account.leverage);
   }
-  const equity = account.balance + floatingPnl;
+  // Equity = Balance + Bonus credit + Floating PnL (MT convention: bonus is
+  // spendable trading credit — usable as margin, not withdrawable as cash).
+  const equity = account.balance + account.bonus + floatingPnl;
   const freeMargin = equity - margin;
   const marginLevel = margin > 0 ? (equity / margin) * 100 : 0;
   return {
@@ -146,7 +148,9 @@ export async function processSlTp(userId: string): Promise<string[]> {
   return closed;
 }
 
-/** Core close routine: computes PnL, credits balance, marks CLOSED. */
+/** Core close routine: computes PnL, credits balance, marks CLOSED.
+ *  Negative-balance protection: if a loss would push balance below zero,
+ *  the shortfall is absorbed by bonus credit first, and balance clamps at 0. */
 export async function closeTradeAtPrice(
   tr: { id: string; symbol: string; side: string; volume: number; openPrice: number; accountId: string },
   closePrice: number
@@ -155,19 +159,31 @@ export async function closeTradeAtPrice(
   const def = getInstrument(tr.symbol);
   const contract = def?.contractSize ?? 1;
   const dir = tr.side === "BUY" ? 1 : -1;
-  const pnl = (closePrice - tr.openPrice) * contract * tr.volume * dir;
+  const pnl = round2((closePrice - tr.openPrice) * contract * tr.volume * dir);
   await db.trade.update({
     where: { id: tr.id },
     data: {
       status: "CLOSED",
       closePrice,
-      pnl: round2(pnl),
+      pnl,
       closedAt: new Date(),
     },
   });
-  await db.account.update({
-    where: { id: tr.accountId },
-    data: { balance: { increment: round2(pnl) } },
-  });
-  return round2(pnl);
+
+  const account = await db.account.findUnique({ where: { id: tr.accountId } });
+  if (account) {
+    let newBalance = round2(account.balance + pnl);
+    const data: { balance: number; bonus?: number } = { balance: newBalance };
+    if (newBalance < 0) {
+      const shortfall = -newBalance;
+      const absorbed = Math.min(account.bonus ?? 0, shortfall);
+      if (absorbed > 0) {
+        data.bonus = round2(Math.max(0, account.bonus - absorbed));
+        newBalance = round2(newBalance + absorbed);
+      }
+      data.balance = Math.max(0, newBalance);
+    }
+    await db.account.update({ where: { id: tr.accountId }, data });
+  }
+  return pnl;
 }

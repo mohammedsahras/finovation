@@ -82,3 +82,26 @@ Stage Summary:
 - Finovation is complete and delivery-ready; all views verified post-restart with zero code changes needed
 - Platform state: 5 core modules (My Account, Trade, Deposit, Withdraw, History, Profile) + landing page, all operational
 - Test account: alex.rivera@finovation.io / TradingPro2026 (balance $0.00, bonus $250.00, 2W/0L record)
+
+---
+Task ID: 5
+Agent: Main agent (Super Z)
+Task: "Make all buttons work / clear the error message" — user-reported trade error fixed + full button audit
+
+Work Log:
+- Root cause of user's POST /api/trades 400: margin check used balance only, ignoring the $250 welcome bonus, so every BUY/SELL failed with "Insufficient free margin" while the UI prominently displayed the bonus
+- Fix 1 (src/lib/api.ts): summarizeAccount equity = balance + bonus + floating PnL (MT convention: bonus is spendable trading credit, not withdrawable cash); fixes equity/freeMargin/marginLevel everywhere
+- Fix 2 (src/app/api/trades/route.ts POST): margin-check equity includes account.bonus
+- Fix 3 (src/components/finovation/trade.tsx): "Free margin after" now = server freeMargin − new order margin (was balance − margin)
+- Fix 4: negative-balance protection in closeTradeAtPrice + partial-close branch of /api/trades/close — losses absorb into bonus first, balance clamps at 0 (was producing -$0.51 balance after closing a bonus-funded losing trade)
+- Fix 5 (src/app/layout.tsx): forced dark theme via <html class="dark"> — Radix portals (Popover/DropdownMenu/Toaster) rendered OUTSIDE page.tsx's .dark wrapper with light tokens, causing white notification dropdown / menus / toasts
+- Fix 6 (trade.tsx): instrument search now scans ALL categories (searching "gold" from Crypto tab previously returned "No instruments match")
+- DB repair (scripts/repair-balance.ts): alex.rivera account balance -0.51 -> 0, bonus 250 -> 249.49
+- Full button audit via agent-browser (desktop 1280px + mobile 390px), all passing:
+  landing nav anchors/CTAs, register (new user "Test User" created), login, sign out, sidebar nav (6 sections), hero actions, copy-account, account dropdown, create new account (#104817415), notifications + Mark all read (13 -> 0), account menu, BUY 0.01 (opened, live PnL, SL/TP set + chart lines), Close all (-$0.51 booked w/ protection), SELL 0.05 (opened, closed +$2.75), volume +/- and presets, instrument switch, category tabs, global search, Deposit $500 Visa (receipt DEP-30176765, balance $502.75), Withdraw all (receipt WDR-49960012, bonus stays locked), History tabs + filters (Net P/L $3.05, 75% win), Transactions tab, Profile save
+- Final sweep: only 4 x 400s in entire 13k-line log, all pre-fix; post-fix traffic 100% clean; ESLint clean; zero console errors
+
+Stage Summary:
+- User-facing error eliminated: trading now works on bonus credit (standard MT behavior), error toast no longer appears on normal trades
+- 6 code fixes + 1 data repair; every interactive element in the app clicked and verified working
+- Account state: alex.rivera balance $0.00 / bonus $249.49; secondary account #104817415 $0.00; new test user testuser@finovation.io / TestPass123 ($0.00)

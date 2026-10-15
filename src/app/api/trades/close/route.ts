@@ -31,7 +31,9 @@ export async function POST(req: Request) {
       closeVolume = Math.round(partialVolume * 100) / 100;
       const def = getInstrument(trade.symbol);
       const dir = trade.side === "BUY" ? 1 : -1;
-      const pnl = (closePrice - trade.openPrice) * (def?.contractSize ?? 1) * closeVolume * dir;
+      const pnl = Math.round(
+        (closePrice - trade.openPrice) * (def?.contractSize ?? 1) * closeVolume * dir * 100
+      ) / 100;
       await db.trade.update({
         where: { id: trade.id },
         data: { volume: Math.round((trade.volume - closeVolume) * 100) / 100 },
@@ -55,10 +57,21 @@ export async function POST(req: Request) {
           comment: `Partial close of #${trade.ticket}`,
         },
       });
-      await db.account.update({
-        where: { id: trade.accountId },
-        data: { balance: { increment: Math.round(pnl * 100) / 100 } },
-      });
+      // Book partial PnL with negative-balance protection (bonus absorbs shortfall first).
+      const pAcc = await db.account.findUnique({ where: { id: trade.accountId } });
+      if (pAcc) {
+        let newBalance = Math.round((pAcc.balance + pnl) * 100) / 100;
+        const accData: { balance: number; bonus?: number } = { balance: newBalance };
+        if (newBalance < 0) {
+          const absorbed = Math.min(pAcc.bonus ?? 0, -newBalance);
+          if (absorbed > 0) {
+            accData.bonus = Math.round(Math.max(0, pAcc.bonus - absorbed) * 100) / 100;
+            newBalance = Math.round((newBalance + absorbed) * 100) / 100;
+          }
+          accData.balance = Math.max(0, newBalance);
+        }
+        await db.account.update({ where: { id: trade.accountId }, data: accData });
+      }
     } else {
       const pnl = await closeTradeAtPrice(trade, closePrice);
       await db.notification.create({

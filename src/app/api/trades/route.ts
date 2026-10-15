@@ -63,7 +63,9 @@ export async function POST(req: Request) {
       usedMargin += marginRequired(tr.symbol, tr.volume, tr.openPrice, account.leverage);
       floating += positionPnl(tr.symbol, tr.side, tr.volume, tr.openPrice, t);
     }
-    const equity = account.balance + floating;
+    // Equity includes bonus credit so welcome-bonus funds can be used as
+    // trading margin (standard MT behaviour — bonus is not withdrawable cash).
+    const equity = account.balance + (account.bonus ?? 0) + floating;
     const newMargin = marginRequired(symbol, vol, openPrice, account.leverage);
     if (equity - usedMargin < newMargin) {
       return fail("Insufficient free margin. Reduce volume or deposit more funds.");
