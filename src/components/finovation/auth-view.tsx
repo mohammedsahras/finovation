@@ -4,6 +4,7 @@
 // Finovation Auth - split screen login / register
 // ============================================================
 import { useState } from "react";
+import AnimatedBackground from "./animated-bg";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -33,8 +34,7 @@ export default function AuthView({ onBack, onAuthed, initialMode = "login" }: Pr
     <div className="flex min-h-screen flex-col bg-background text-foreground lg:grid lg:grid-cols-2">
       {/* Left branding panel */}
       <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-primary/12 via-card to-background p-10 lg:flex">
-        <div className="pointer-events-none absolute -left-24 top-1/3 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 right-0 h-72 w-72 rounded-full bg-emerald-500/8 blur-3xl" />
+        <AnimatedBackground variant="ambient" />
         <Logo size="lg" />
         <div className="relative space-y-6">
           <h2 className="max-w-md text-4xl font-extrabold leading-tight tracking-tight">

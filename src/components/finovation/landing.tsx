@@ -11,6 +11,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useMarket } from "./market-context";
 import { Logo, PriceFlash, ChangeBadge, Sparkline } from "./ui-bits";
+import AnimatedBackground from "./animated-bg";
 import { INSTRUMENTS, changePct, getInstrument, fmtPrice } from "@/lib/market";
 import {
   ArrowRight,
@@ -109,7 +110,8 @@ export default function Landing({ onLogin, onRegister }: { onLogin: () => void; 
       <main className="flex-1">
         {/* ---------- Hero ---------- */}
         <section className="relative overflow-hidden">
-          {/* backdrop: grid + aurora orbs */}
+          {/* backdrop: animated candlestick canvas + aurora orbs + grid */}
+          <AnimatedBackground variant="hero" seedPrice={quotes.EURUSD?.bid} />
           <div
             className="pointer-events-none absolute inset-0 opacity-[0.3]"
             style={{
@@ -120,8 +122,6 @@ export default function Landing({ onLogin, onRegister }: { onLogin: () => void; 
               WebkitMaskImage: "radial-gradient(ellipse 90% 70% at 50% 0%, black 40%, transparent 100%)",
             }}
           />
-          <div className="pointer-events-none absolute -top-44 left-1/4 h-105 w-150 rounded-full bg-primary/12 blur-3xl" />
-          <div className="pointer-events-none absolute -top-24 right-0 h-80 w-105 rounded-full bg-emerald-500/8 blur-3xl" />
 
           <div className="relative mx-auto grid w-full max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-2 lg:py-24">
             <div className="space-y-7">

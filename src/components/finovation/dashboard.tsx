@@ -13,6 +13,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import { useMarket } from "./market-context";
+import AnimatedBackground from "./animated-bg";
 import { Logo, PnlText } from "./ui-bits";
 import type { AccountSummary, AppNotification, User, Trade } from "@/lib/types";
 import {
@@ -117,7 +118,9 @@ export default function Dashboard({
   );
 
   return (
-    <div className="flex min-h-screen flex-col bg-background text-foreground">
+    <div className="relative isolate flex min-h-screen flex-col bg-background text-foreground">
+      {/* ambient animated backdrop (particles + drifting glow) */}
+      <AnimatedBackground variant="ambient" className="-z-10 opacity-60" />
       {/* ---------- Topbar ---------- */}
       <header className="glass sticky top-0 z-40 border-b border-border/60">
         <div className="flex h-16 items-center gap-3 px-4 sm:px-6">

@@ -124,3 +124,27 @@ Stage Summary:
 - 2 critical button bugs fixed (password change 500, toast system dead) + 1 UX fix (register entry point)
 - Every button on every view clicked and verified working, desktop + mobile, zero errors
 - Accounts: alex.rivera (main $5.60, bonus $249.49, 3W/4L), maria.silva@finovation.io / MariaPass2026 (new, $0), testuser, probe.create.test (probe artifacts)
+
+---
+Task ID: 7
+Agent: Main agent (Super Z)
+Task: "Using SQLite DB, add suitable animated background for the website" — animated backdrop system
+
+Work Log:
+- Confirmed database remains SQLite (db/custom.db) — all auth/account/deposit/withdraw/trade/notification APIs verified serving from it during this task (user Alex Rivera, 4 accounts)
+- NEW src/components/finovation/animated-bg.tsx: canvas-based AnimatedBackground with two variants
+  - variant="hero" (landing): 3 parallax candlestick layers (slate far / gold mid with gradient trend line / slate near, emerald-red body semantics) scrolling at 7/13/22 px-per-second, seeded from the live EURUSD bid via seedPrice prop (SQLite-backed price feed), ~52 twinkling gold/white particles
+  - variant="ambient" (dashboard shell + auth branding panel): particles + CSS aurora orbs only, no chart lines — keeps trading views readable
+  - Performance engineering: single rAF loop, DPR capped 1.75, ResizeObserver rebuild, pauses on document.hidden, prefers-reduced-motion renders a single static frame, candle walk advances only when candles scroll off-screen
+- globals.css: added orb-drift-1/2/3 keyframes (26s/32s/22s ease-in-out) + .animate-orb-* utilities + prefers-reduced-motion guard disabling decorative animations
+- Wired: landing.tsx hero (replaced 2 static blur orbs with AnimatedBackground, kept grid overlay), auth-view.tsx left branding panel (static orbs -> ambient canvas), dashboard.tsx shell (relative isolate + ambient canvas at -z-10 opacity-60 so all content paints above)
+- Dev-server restart required: watcher served a stale dashboard chunk after rapid edit sequence (same class as Task 2 stale-CSS incident) — killed next dev, restarted via .zscripts/dev.sh, resolved
+- Verified in browser: landing hero shows drifting candlesticks + particles + warm aurora (screenshots shot-anim-hero-1/2.png), frame-diff confirmed live motion (42,640 changed pixels/1.2s), animation measured at 60.5 FPS
+- Auth panel + dashboard ambient verified visually (shot-anim-auth.png, shot-anim-dashboard.png, shot-anim-final-dashboard.png) — "Signed in — welcome back!" toast confirmed rendering (Task 6 fix still working)
+- Mobile 390px: canvas scales (390x2626 ambient), layout intact, bottom nav works, zero errors (shot-anim-mobile.png)
+- ESLint clean on all 4 touched files; zero page/console errors after restart
+
+Stage Summary:
+- Deliverable: living-market animated backdrop system across landing/auth/dashboard, Midnight & Gold aesthetic preserved, 60 FPS, reduced-motion + tab-hidden aware
+- SQLite database untouched and verified serving all platform data
+- Screenshots: shot-anim-{hero-1,hero-2,auth,dashboard,mobile,final-dashboard}.png
