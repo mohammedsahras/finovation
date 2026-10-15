@@ -1,0 +1,92 @@
+// Finovation Trading Platform - Prisma Schema (SQLite)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(cuid())
+  email        String        @unique
+  password     String // scrypt hash
+  fullName     String
+  phone        String?
+  country      String?
+  verified     Boolean       @default(false)
+  kycLevel     Int           @default(1)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  accounts     Account[]
+  transactions Transaction[]
+  trades       Trade[]
+  notifications Notification[]
+}
+
+model Account {
+  id        String        @id @default(cuid())
+  number    String        @unique // trading account number e.g. "10035421"
+  type      String // STANDARD | PRO | ZERO
+  currency  String        @default("USD")
+  balance   Float         @default(0)
+  bonus     Float         @default(0)
+  leverage  Int           @default(500)
+  userId    String
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  trades    Trade[]
+  transacts Transaction[]
+  createdAt DateTime      @default(now())
+}
+
+model Transaction {
+  id        String   @id @default(cuid())
+  reference String   @unique // e.g. "DEP-83920194"
+  type      String // DEPOSIT | WITHDRAWAL
+  method    String // VISA | MASTERCARD | BANK | BTC | USDT | SKRILL | NETELLER
+  amount    Float
+  fee       Float    @default(0)
+  status    String // COMPLETED | PENDING | REJECTED
+  note      String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId String?
+  account   Account? @relation(fields: [accountId], references: [id])
+  createdAt DateTime @default(now())
+}
+
+model Trade {
+  id         String    @id @default(cuid())
+  ticket     String    @unique // e.g. "#48291023"
+  symbol     String
+  side       String // BUY | SELL
+  volume     Float // lots
+  openPrice  Float
+  closePrice Float?
+  stopLoss   Float?
+  takeProfit Float?
+  pnl        Float?
+  commission Float     @default(0)
+  swap       Float     @default(0)
+  status     String // OPEN | CLOSED
+  comment    String?
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId  String
+  account    Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  openedAt   DateTime  @default(now())
+  closedAt   DateTime?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  body      String
+  type      String   @default("INFO") // INFO | SUCCESS | WARNING
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
